@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Safe Routes — FreshSteps AI</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <style>
+    body {
+      background:#f5f7fa;
+      font-family:Inter,Arial;
+    }
+    .map {
+      height:600px;
+      border-radius:12px;
+      margin-top:20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-4">
+    <h2>🛣️ Safest Routes</h2>
+    <p>
+      <strong>From:</strong> {{ result.from_location or '—' }}
+      &nbsp; → &nbsp;
+      <strong>To:</strong> {{ result.to_location or '—' }}
+    </p>
+
+    <div id="routeMap" class="map"></div>
+
+    <a class="btn btn-secondary mt-3" href="{{ url_for('dashboard', submission_id=submission_id) }}">
+      ← Back to Dashboard
+    </a>
+    <button id="travelGreenRoute" class="btn btn-success mt-3">
+      🚶 Travel Green Route & Earn Coins
+    </button>
+
+    <div id="coinMessage" class="mt-2 text-success fw-bold"></div>
+  </div>
+
+<script>
+const fromLat = Number("{{ result.latitude or '28.4595' }}") || 28.4595;
+  const fromLon = Number("{{ result.longitude or '77.0266' }}") || 77.0266;
+  const toLat = fromLat + 0.02;
+  const toLon = fromLon + 0.03;
+
+  // ✅ Initialize map
+  const map = L.map('routeMap').setView([(fromLat+toLat)/2, (fromLon+toLon)/2], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution:'© OpenStreetMap contributors'
+  }).addTo(map);
+
+  // ✅ Define routes
+  const route1 = [[fromLat,fromLon], [fromLat+0.008, fromLon+0.01], [toLat,toLon]]; // safe (green)
+  const route2 = [[fromLat,fromLon], [fromLat+0.012, fromLon+0.015], [toLat,toLon]]; // alt (orange)
+  const route3 = [[fromLat,fromLon], [fromLat+0.02, fromLon+0.02], [toLat,toLon]]; // polluted (red)
+
+  // ✅ Draw routes
+  L.polyline(route1, {color:'#16a34a', weight:6}).addTo(map).bindPopup("Safe Route (lower exposure)");
+  L.polyline(route2, {color:'#f59e0b', weight:6}).addTo(map).bindPopup("Alternate Route");
+  L.polyline(route3, {color:'#dc2626', weight:6}).addTo(map).bindPopup("Fast but polluted");
+
+  // ✅ Start & End markers
+  L.marker(route1[0]).addTo(map).bindPopup("Start");
+  L.marker(route1[route1.length-1]).addTo(map).bindPopup("Destination");
+
+  map.fitBounds([route1, route2, route3]);
+  map.invalidateSize();
+
+    // ✅ Travel Simulation (smooth movement)
+    document.getElementById("travelGreenRoute").addEventListener("click", () => {
+    let segmentIndex = 0;
+    let step = 0;
+    const traveler = L.marker(route1[0], {title:"You"}).addTo(map);
+
+    function moveAlongRoute() {
+      const start = route1[segmentIndex];
+      const end = route1[segmentIndex + 1];
+      if (!end) {
+        // ✅ Reached destination → add coins
+        fetch("{{ url_for('add_coins', submission_id=submission_id) }}", {
+          method: "POST"
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.coins !== undefined) {
+            document.getElementById("coinMessage").innerText = `🎉 You completed the safe route! +10 coins (Total: ${data.coins})`;
+          } else {
+            document.getElementById("coinMessage").innerText = "⚠️ Error adding coins.";
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          document.getElementById("coinMessage").innerText = "⚠️ Could not connect to server.";
+        });
+        return;
+      }
+
+      // Linear interpolation between start and end
+      const lat = start[0] + (end[0] - start[0]) * step / 50;
+      const lon = start[1] + (end[1] - start[1]) * step / 50;
+      traveler.setLatLng([lat, lon]);
+
+      step++;
+      if (step <= 50) {
+        setTimeout(moveAlongRoute, 200); // smooth steps every 0.2s
+      } else {
+        // Move to next segment
+        step = 0;
+        segmentIndex++;
+        moveAlongRoute();
+      }
+    }
+
+    moveAlongRoute();
+  });
+</script>
+</body>
+</html>

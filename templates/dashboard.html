@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FreshSteps AI — Dashboard</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+
+
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #fff;
+      --muted: #6b7280;
+      --brand: #4f46e5;
+    }
+
+    body {
+      font-family: Inter, system-ui, Arial;
+      background: var(--bg);
+      margin: 0
+    }
+
+    .wrap {
+      max-width: 1180px;
+      margin: 20px auto;
+      padding: 16px
+    }
+
+    .hdr {
+      background: linear-gradient(90deg, #4338ca, #6366f1);
+      color: #fff;
+      padding: 20px;
+      border-radius: 12px
+    }
+
+    .hdr h1 {
+      margin: 0;
+      font-weight: 800
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-top: 12px
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: 0 8px 20px rgba(2, 8, 23, .06)
+    }
+
+    .title {
+      font-weight: 800;
+      margin-bottom: 8px
+    }
+
+    .heat-wrap {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      color: white
+    }
+
+    .heat-cell {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      color: white !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800
+    }
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 6px;
+      align-items: center
+    }
+
+    .tab {
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      color: white;
+    }
+
+    .tab.active {
+      background: var(--brand);
+      color: #fff
+    }
+
+    .btn {
+      background: var(--brand);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 0;
+      cursor: pointer
+    }
+
+    #map {
+      height: 360px;
+      border-radius: 10px
+    }
+
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      /* Air-inspired blue shades */
+      top: 0;
+      left: 0;
+      z-index: -1;
+
+
+    }
+
+    .heat-cell {
+      color: white !important;
+      /* Force text color to white */
+
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.12);
+      /* frosted glass effect */
+      backdrop-filter: blur(12px);
+      /* blur background behind the card */
+      -webkit-backdrop-filter: blur(12px);
+      /* Safari support */
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      color: #fff;
+      /* white text for contrast */
+      padding: 20px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+    }
+
+    .btn-beautiful {
+      display: inline-block;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #4f46e5, #6366f1);
+      /* gradient */
+      color: #fff;
+      font-weight: 600;
+      font-size: 16px;
+      text-decoration: none;
+      border-radius: 12px;
+      /* rounded corners */
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .btn-beautiful:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      /* reverse gradient on hover */
+    }
+
+    .btn-beautiful:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    }
+
+
+
+    /* Overlay */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      /* darker overlay */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Box */
+    .modal-content {
+      background: rgba(255, 255, 255, 0.08);
+      /* frosted glass */
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-radius: 18px;
+      padding: 28px;
+      width: 90%;
+      max-width: 480px;
+      text-align: center;
+      color: #fff;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+      animation: fadeInUp 0.4s ease;
+    }
+
+    /* Title + message */
+    .modal-title {
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .modal-message {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    /* Close button */
+    .modal-content .close {
+      color: #fff;
+      float: right;
+      font-size: 32px;
+      font-weight: bold;
+      cursor: pointer;
+      position: absolute;
+      top: 12px;
+      right: 18px;
+      transition: color 0.2s ease;
+    }
+
+    .modal-content .close:hover {
+      color: #f87171;
+    }
+
+    /* Animation */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Exposure level colors */
+    .exposure-low {
+      color: #16a34a;
+    }
+
+    /* green */
+    .exposure-med {
+      color: #f59e0b;
+    }
+
+    /* orange */
+    .exposure-high {
+      color: #dc2626;
+    }
+
+    .coins-box {
+      position: absolute;
+      top: 30px;
+      right: 450px;
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      color: white;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .coins-box .coin-icon {
+      font-size: 1.5rem;
+      margin-right: 8px;
+    }
+
+    .coins-box .coin-label {
+      margin-left: 6px;
+      font-weight: 500;
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    #exposureBarChart {
+      background-color: transparent !important;
+      /* ✅ remove unwanted bg */
+    }
+
+    /* red */
+  </style>
+</head>
+
+<body>
+  <div id="particles-js"></div>
+
+  <!-- Exposure Popup Modal -->
+  <div id="exposureModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span> <!-- make sure this is inside modal-content -->
+      <h2 class="modal-title">Air Quality</h2>
+      <p id="exposureMessage" class="modal-message"></p>
+      <p id="healthAdvice" class="modal-message"></p>
+
+
+      <a id="productBtn" href="{{ url_for('products', submission_id=submission_id) }}" class="btn-beautiful"
+        style="display:none;">
+        View Recommended Products
+      </a>
+      <a class="btn-beautiful" href="{{ url_for('routes', submission_id=submission_id) }}">View
+        Routes</a></h1>
+    </div>
+  </div>
+
+
+
+
+  <div class="wrap">
+    <header class="hdr card">
+      <div style="margin-top:6px;color:white;">
+        <h1><span style=" color:#2e88ff; font-family:Lobster;">FreshSteps AI</span> <span style="color:white">— Air
+            Quality Dashboard</span> <a class="btn-beautiful" style="margin-left: 150px;"
+            href="{{ url_for('products', submission_id=submission_id) }}">
+            Product Recommendations
+          </a> <a class="btn-beautiful" href="{{ url_for('routes', submission_id=submission_id) }}">View
+            Routes</a></h1>
+        Hello, <strong>{{ result.fullName }}</strong> &nbsp &nbsp &nbsp City: <strong>{{ result.city_matched }}
+        </strong>
+        &nbsp &nbsp &nbsp AQI : <strong>{{ result['AQI'] }}</strong>
+        <div class="coins-box">
+          <span class="coin-icon">🪙</span>
+          <span id="coinsDisplay">{{ result.coins }}</span>
+          <span class="coin-label">Coins</span>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- KPI row -->
+    <section class="kpi-grid" style="margin-top:12px">
+      <div class="card ">
+        <div class="title " style=" color: #2e88ff">PM2.5 (Latest)</div>
+        <div id="pm25_value" style="font-size:28px;font-weight:800">{{ result.pm2_5_latest or "—" }} &micro;g/m&sup3;
+        </div>
+        <div>Avg: {{ result.pm2_5_avg or "—" }} &micro;g/m&sup3</div>
+      </div>
+      <div class="card">
+        <div class="title" style=" color: #2e88ff">PM10 (Latest)</div>
+        <div id="pm10_value" style="font-size:28px;font-weight:700">{{ result.pm10_latest or "—" }} &micro;g/m&sup3;
+        </div>
+        <div>Avg: {{ result.pm10_avg or "—" }}&micro;g/m&sup3</div>
+      </div>
+      <div class="card">
+        <div class="title" style=" color: #2e88ff">CO₂ (Latest)</div>
+        <div id="co2_value" style="font-size:28px;font-weight:800">{{ result.co2_latest or "—" }} ppm</div>
+        <div>Avg: {{ result.co2_avg or "—" }} ppm</div>
+      </div>
+      <div class="card">
+        <div class="title" style=" color: #2e88ff">Temperature (AT)</div>
+        <div style="font-size:28px;font-weight:800" id="temp">{{ result.AT_latest or "—" }} °C</div>
+        <div>Humidity: {{ result.RH_latest or "—" }}%</div>
+      </div>
+    </section>
+
+    <!-- Trends + Exposure -->
+    <section class="grid" style="grid-template-columns:2fr 1fr;margin-top:16px;gap:16px">
+      <div class="card">
+        <div class="title">Pollution Trends (recent)</div>
+        <canvas id="trendChart" height="220"></canvas>
+      </div>
+      <!-- Mask Type Dropdown (hidden until Mask ON is clicked) -->
+      <!-- <div id="maskTypeContainer" style="display:none; margin:15px 0;">
+        <label for="maskType" style="font-weight:600; margin-right:10px;">Select Mask Type:</label>
+        <select id="maskType" style="padding:5px; border-radius:6px;">
+          <option value="cloth">Cloth Mask</option>
+          <option value="surgical">Surgical Mask</option>
+          <option value="n95">N95/FFP2 Mask</option>
+        </select>
+      </div> -->
+
+
+      <div class="card">
+        <div class="title">Exposure Breakdown & Mask</div>
+        <div class="tabs" id="maskTabs">
+          <div class="tab active" data-mask="off">Mask OFF</div>
+          <div class="tab" data-mask="on">Mask ON</div>
+          <div class="maskType">(N95 Mask)</div>
+        </div>
+        <canvas id="exposureChart" height="220" style="margin-top:12px"></canvas>
+        <div style="margin-top:10px;color:white">
+          Indoor / Work / Outdoor hours (from form): <strong>{{ result.indoor }} / {{ result.work }} / {{ result.outdoor
+            }}</strong>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Weekly heatmap + map -->
+    <section class="grid" style="grid-template-columns:2fr 1fr;margin-top:16px;gap:16px">
+      <div class="card">
+
+        <!-- <h3>Exposure Level: {{ exposure_level }}</h3>
+        <p>{{ health_recommendation }}</p> -->
+        <!-- <div class="card" > -->
+        <div class="title">Exposure Levels (Last 3 Days)</div>
+        <canvas id="exposureBarChart" width="400" height="200"></canvas>
+        <!-- </div> -->
+
+      </div>
+
+      <div class="card">
+        <div class="title">Your Submitted Location</div>
+        <div style="color:white;margin-bottom:8px">From: <strong>{{ result.from_location }}</strong><br>To: <strong>{{
+            result.to_location }}</strong></div>
+        <div id="map"></div>
+      </div>
+    </section>
+
+    <!-- Comparison -->
+    <section class="card" style="margin-top:16px">
+      <div class="title" style="font-size: 30px; color:yellow;">Health Insights</div> 
+      <div id="healthAdviceContainer" style="margin-top: 12px; color:white; font-weight: 600;"></div>
+    </section>
+  </div>
+  <script>
+
+
+
+
+
+    function calcAQI(value, type) {
+      let breakpoints;
+
+      if (type === 'pm25') {
+        breakpoints = [
+          { aqiLo: 0, aqiHi: 50, cLo: 0, cHi: 30 },
+          { aqiLo: 51, aqiHi: 100, cLo: 31, cHi: 60 },
+          { aqiLo: 101, aqiHi: 200, cLo: 61, cHi: 90 },
+          { aqiLo: 201, aqiHi: 300, cLo: 91, cHi: 120 },
+          { aqiLo: 301, aqiHi: 400, cLo: 121, cHi: 250 },
+          { aqiLo: 401, aqiHi: 500, cLo: 251, cHi: 500 }
+        ];
+      } else if (type === 'pm10') {
+        breakpoints = [
+          { aqiLo: 0, aqiHi: 50, cLo: 0, cHi: 50 },
+          { aqiLo: 51, aqiHi: 100, cLo: 51, cHi: 100 },
+          { aqiLo: 101, aqiHi: 200, cLo: 101, cHi: 250 },
+          { aqiLo: 201, aqiHi: 300, cLo: 251, cHi: 350 },
+          { aqiLo: 301, aqiHi: 400, cLo: 351, cHi: 430 },
+          { aqiLo: 401, aqiHi: 500, cLo: 431, cHi: 600 }
+        ];
+      }
+
+      for (let bp of breakpoints) {
+        if (value >= bp.cLo && value <= bp.cHi) {
+          return Math.round(((bp.aqiHi - bp.aqiLo) / (bp.cHi - bp.cLo)) * (value - bp.cLo) + bp.aqiLo);
+        }
+      }
+      return 500; // Max AQI
+    }
+
+    // Function to calculate exposure level
+    function getExposureLevel(pm25, pm10, co2) {
+      if (pm25 > 35 || pm10 > 100 || co2 > 1200) {
+        return { level: 'High', cssClass: 'exposure-high' };
+      } else if (pm25 > 15 || pm10 > 50 || co2 > 800) {
+        return { level: 'Medium', cssClass: 'exposure-med' };
+      } else {
+        return { level: 'Low', cssClass: 'exposure-low' };
+      }
+    }
+
+    // Get values from backend
+    const pm25Val = {{ result.pm2_5_latest or 0 }};
+    const pm10Val = {{ result.pm10_latest or 0 }};
+    const co2Val = {{ result.co2_latest or 0 }};
+
+    // Decide exposure
+    const exposureResult = getExposureLevel(pm25Val, pm10Val, co2Val);
+
+    // Modal elements
+    const modal = document.getElementById('exposureModal');
+    const closeBtn = modal.querySelector('.close');
+    const message = document.getElementById('exposureMessage');
+    const productBtn = document.getElementById('productBtn');
+
+    // Set message
+    message.textContent = `Your exposure level is: ${exposureResult.level}`;
+    message.className = "modal-message " + exposureResult.cssClass;
+
+    // Show product button only if Medium/High
+    if (exposureResult.level !== 'Low') {
+      productBtn.style.display = 'inline-block';
+    } else {
+      productBtn.style.display = 'none';
+    }
+
+    // Show modal on page load
+    window.onload = () => {
+      modal.style.display = 'flex';
+    };
+
+    // Close when clicking on ×
+    closeBtn.onclick = () => {
+      modal.style.display = 'none';
+    };
+
+    // Close when clicking outside modal
+    window.onclick = (e) => {
+      if (e.target === modal) {
+        modal.style.display = 'none';
+      }
+    };
+
+
+    // Define health advice messages based on exposure level
+    const healthMessages = {
+      Low: [
+        "Your exposure is low. Keep up your healthy routine!",
+        "You can go outdoors safely, but continue basic hygiene.",
+        "Using Masks can safeguard you to keep yourself safe further."
+      ],
+      Medium: [
+        "Your exposure is medium. Limit outdoor activity if possible.",
+        "Wear a mask in crowded places and wash hands frequently.",
+        "Ensure proper ventilation indoors.",
+        "Recommended Products are advised to use."
+      ],
+      High: [
+        "Exposure is high! Avoid outdoor activity as much as possible.",
+        "Wear a high-quality mask (N95/FFP2) when outside.",
+        "Sanitize surfaces regularly and keep indoor areas ventilated.",
+        "Recommended Products are advised to use."
+      ]
+    };
+
+    // Function to display advice in container
+    function showHealthAdvice(level) {
+      const container = document.getElementById('healthAdviceContainer');
+      container.innerHTML = ""; // clear previous
+
+      const messages = healthMessages[level] || ["No advice available."];
+      const ul = document.createElement('ul');
+
+      messages.forEach(msg => {
+        const li = document.createElement('li');
+        li.textContent = msg;
+        ul.appendChild(li);
+      });
+
+      container.appendChild(ul);
+      container.className = level === "Low" ? "exposure-low" : level === "Medium" ? "exposure-med" : "exposure-high";
+    }
+
+    // Call it initially
+    showHealthAdvice(exposureResult.level);
+
+
+    // Save original values from server
+    const originalPM25 = {{ result.pm2_5_latest or 0 }};
+    const originalPM10 = {{ result.pm10_latest or 0 }};
+    const originalCO2 = {{ result.co2_latest or 0 }};
+
+    // Function to update KPI cards
+    function updateCards(maskOn) {
+      let pm25Val = maskOn ? (originalPM25 * 0.05).toFixed(1) : originalPM25;
+      let pm10Val = maskOn ? (originalPM10 * 0.05).toFixed(1) : originalPM10;
+      let co2Val = maskOn ? (originalCO2 * 1.0).toFixed(1) : originalCO2; // Example guideline
+
+      // document.getElementById("pm25_value").textContent = pm25Val;
+      // document.getElementById("pm10_value").textContent = pm10Val;
+      // document.getElementById("co2_value").textContent = co2Val;
+      document.getElementById("pm25_value").innerHTML = `${pm25Val} &micro;g/m&sup3;`;
+      document.getElementById("pm10_value").innerHTML = `${pm10Val} &micro;g/m&sup3;`;
+      document.getElementById("co2_value").innerHTML = `${co2Val} ppm`;
+
+    }
+
+    // Data from servertrendchart
+    const labels = {{ times| tojson }};
+    const pm25 = {{ pm25_ts| tojson }};
+    const pm10 = {{ pm10_ts| tojson }};
+    const co2 = {{ co2_ts| tojson }};
+
+    // Trend chart
+    const tctx = document.getElementById('trendChart').getContext('2d');
+    new Chart(tctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          { label: 'PM2.5', data: pm25, borderColor: '#dc2626', backgroundColor: 'rgba(220,38,38,.12)', fill: true, tension: .3 },
+          { label: 'PM10', data: pm10, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,.12)', fill: true, tension: .3 },
+          { label: 'CO₂', data: co2, borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,.12)', fill: true, tension: .3 }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              color: 'white'
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: {
+              color: 'white'
+            },
+            grid: {
+              color: 'rgba(255,255,255,0.2)'
+            }
+          },
+          y: {
+            ticks: {
+              color: 'white'
+            },
+            grid: {
+              color: 'rgba(255,255,255,0.2)'
+            }
+          }
+        }
+      }
+    });
+
+    // Exposure pie and mask tabs
+    const exposure = {{ exposure| tojson }};
+    const expoCtx = document.getElementById('exposureChart').getContext('2d');
+
+    function exposureData(maskOn) {
+      const indoor = exposure.indoor || 0;
+      const work = maskOn ? (exposure.work || 0) * 0.5 : (exposure.work || 0);
+      const outdoor = maskOn ? (exposure.outdoor || 0) * 0.5 : (exposure.outdoor || 0);
+      return [indoor, work, outdoor];
+    }
+
+    let maskOn = false;
+
+    let expoChart = new Chart(expoCtx, {
+      type: 'pie',
+      data: {
+        labels: ['Indoor', 'Work', 'Outdoor'],
+        datasets: [{ data: exposureData(false), backgroundColor: ['#2e88ff', '#f87171', '#34d399'] }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            labels: {
+              color: 'white',  // ✅ Legend text color
+              font: { size: 14 } // optional
+            }
+          },
+          tooltip: {
+            titleColor: 'white',
+            bodyColor: 'white',
+            backgroundColor: 'rgba(0,0,0,0.7)'
+          }
+        }
+      }
+    });
+
+
+    /*const tabs = document.querySelectorAll('#maskTabs .tab');
+    tabs.forEach(t => {
+      t.addEventListener('click', () => {
+        tabs.forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+        maskOn = (t.dataset.mask === 'on');
+        expoChart.data.datasets[0].data = exposureData(maskOn);
+        expoChart.update();
+      });
+    });*/
+    const tabs = document.querySelectorAll('#maskTabs .tab');
+    tabs.forEach(t => {
+      t.addEventListener('click', () => {
+        tabs.forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+
+        let maskOn = (t.dataset.mask === 'on');
+        updateCards(maskOn);  // 🔑 only update cards
+      });
+    });
+
+
+    // Map
+    const lat = parseFloat("{{ result.latitude or 0 }}") || 0;
+    const lon = parseFloat("{{ result.longitude or 0 }}") || 0;
+    const map = L.map('map').setView([lat || 28.459, lon || 77.026], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+    if (lat && lon) {
+      L.marker([lat, lon]).addTo(map).bindPopup("Submitted location").openPopup();
+    }
+
+    function animateValue(id, minChange, maxChange) {
+      let el = document.getElementById(id);
+      if (!el) return;
+
+      // Base value (from server)
+      let baseValue = parseFloat(el.innerText);
+
+      setInterval(() => {
+        let current = parseFloat(el.innerText);
+        // Random small up/down change
+        let change = (Math.random() * (maxChange - minChange) + minChange) * (Math.random() < 0.5 ? -1 : 1);
+        let newValue = baseValue + change;
+
+        // Keep rounding
+        el.innerText = newValue.toFixed(1);
+      }, 2000); // update every 2 seconds
+    }
+
+    // Call for your sensors
+    animateValue("pm25_value", 0.1, 0.3);
+    animateValue("pm10_value", 0.2, 0.5);
+    animateValue("co2_value", 1, 3);
+    animateValue("temp", 0.1, 0.2);
+
+
+    particlesJS("particles-js", {
+      "particles": {
+        "number": {
+          "value": 110,
+          "density": { "enable": true, "value_area": 1000 }
+        },
+        "color": { "value": ["#ffffff", "#87ceeb", "#b3e5fc"] },
+        "shape": {
+          "type": "circle",
+          "stroke": { "width": 0, "color": "#000000" }
+        },
+        "opacity": {
+          "value": 0.6,
+          "random": true,
+          "anim": {
+            "enable": true,
+            "speed": 1.2,
+            "opacity_min": 0.3,
+            "sync": false
+          }
+        },
+        "size": {
+          "value": 3,
+          "random": true,
+          "anim": {
+            "enable": true,
+            "speed": 2,
+            "size_min": 0.5,
+            "sync": false
+          }
+        },
+        "line_linked": { "enable": false },  /* No connecting lines */
+        "move": {
+          "enable": true,
+          "speed": 2,
+          "direction": "none",
+          "random": true,
+          "straight": false,
+          "out_mode": "out",
+          "bounce": false
+        }
+      },
+      "interactivity": {
+        "detect_on": "canvas",
+        "events": {
+          "onhover": { "enable": true, "mode": "repulse" },
+          "onclick": { "enable": true, "mode": "push" },
+          "resize": true
+        },
+        "modes": {
+          "repulse": { "distance": 100, "duration": 0.4 },
+          "push": { "particles_nb": 4 }
+        }
+      },
+      "retina_detect": true
+    });
+
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+  <script>
+    const barLabels = ["Day Before", "Yesterday", "Today"];
+    const barData = ["{{ daybefore_exp }}", "{{ yesterday_exp }}", "{{ today_exp }}"];
+    ///-------------------------works idi 
+    const ctxBar = document.getElementById("exposureBarChart").getContext("2d");
+    new Chart(ctxBar, {
+      type: 'bar',
+      data: {
+        labels: barLabels,
+        datasets: [{
+          label: 'Exposure Level',
+          data: barData.map(v => v == "Low" ? 1 : v == "Medium" ? 2 : 3), // Convert to numeric for chart
+          backgroundColor: ['#16a34a', '#f59e0b', '#dc2626']
+        }]
+      },
+      options: {
+        plugins: {
+          legend: {
+            labels: {
+              color: "white"   // ✅ legend text white
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: {
+              color: "white"  // ✅ x-axis labels white
+            },
+            // grid: {
+            //     color: "rgba(255,255,255,0.2)" // faint white grid
+            // }
+          }, y: { min: 0, max: 3, ticks: { color: "white", stepSize: 1, callback: v => ["", "Low", "Medium", "High"][v] } }
+        }
+      }
+    });
+
+
+    //
+
+    // </script>
+
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FreshSteps AI</title>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="	https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+  <div id="particles-js"></div>
+  <div class="home-content">
+
+    <!-- Navbar -->
+    <nav>
+      <div class="logo">FreshSteps AI</div>
+      <ul class="nav-links">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Problem</a></li>
+        <li><a href="#">Solution</a></li>
+        <li><a href="#">Features</a></li>
+        <li><a href="#">Impact</a></li>
+      </ul>
+
+    </nav>
+
+
+    <!-- Hero section -->
+    <section class="hero">
+      <canvas id="bgCanvas"></canvas>
+
+      <!-- Small Square Carousel -->
+      <div id="freshCarousel" class="carousel slide small-carousel" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img src="{{ url_for('static', filename='images/mask.jpg')}}" class="d-block w-100" alt="People usig masks">
+
+          </div>
+          <div class="carousel-item">
+            <img src="{{ url_for('static', filename='images/modipack.jpeg')}}" class="d-block w-100" alt="Narendra modi using freshStepsAi backpack">
+          </div>
+          <div class="carousel-item">
+            <img src="{{ url_for('static', filename='images/dashboard.png')}}" class="d-block w-100" alt="sample Dashboard of user">
+          </div>
+          <div class="carousel-item">
+            <img src="{{ url_for('static', filename='images/exposure.png')}}" class="d-block w-100" alt="Analysis of exposure of user">
+          </div>
+        </div>
+        <!-- Controls -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#freshCarousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#freshCarousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon"></span>
+        </button>
+      </div>
+
+      <h1>Breathe Smart with <span>FreshSteps AI</span></h1>
+      <p>The world's first AI-powered wearable air quality monitoring system. Get personalized pollution exposure
+        tracking, real-time health insights, and contribute to cleaner cities.</p>
+      <div class="hero-buttons">
+        <a href="/form">
+          <button class="btn-primary">Start Monitoring →</button>
+        </a>
+        <button class="btn-outline">Learn More</button>
+      </div>
+
+    </section>
+
+    <!-- How it Works -->
+    <section class="how-it-works">
+      <h2>How FreshSteps AI Works</h2>
+
+      <div class="steps">
+        <div class="step">
+          <img src="https://img.icons8.com/color/96/air-quality.png" alt="Wearable Sensor" />
+          <h3>Wearable Sensor</h3>
+          <p>Continuously monitors air quality around you in real-time.</p>
+        </div>
+        <div class="step">
+          <img src="https://cdn-icons-png.flaticon.com/512/2103/2103665.png" alt="AI Processing" class="feature-icon">
+          <img src="{{ url_for('static', filename='images/robot.png')}}" alt="AI Processing" class="feature-icon" />
+          <h3>AI Processing</h3>
+          <p>Data is analyzed instantly using AI to detect harmful pollutants.</p>
+        </div>
+        <div class="step">
+          <img src="https://img.icons8.com/color/96/heart-health.png" alt="Health Insights" />
+          <h3>Health Insights</h3>
+          <p>Personalized health suggestions & prevention tips delivered to you.</p>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-showcase">
+      <h2>Our Key Features</h2>
+      <div class="feature-cards">
+        <div class="card">
+          <img src="https://img.icons8.com/color/96/dust.png" alt="Pollution Tracking" />
+          <h3>Pollution Tracking</h3>
+          <p>Track PM2.5, CO2,PM10,NO2,VOC and other pollutants around you anytime, anywhere.</p>
+        </div>
+        <div class="card">
+          <img src="https://img.icons8.com/color/96/alarm.png" alt="Alerts" />
+          <h3>Real-time Alerts</h3>
+          <p>Get instant notifications when air quality reaches unsafe levels.</p>
+        </div>
+        <div class="card">
+          <img src="https://img.icons8.com/color/96/hospital-room.png" alt="Prevention" />
+          <h3>Health Prevention</h3>
+          <p>AI suggests preventive actions to reduce health risks.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Health Focus Section -->
+    <section class="health-focus">
+      <div class="health-text">
+        <h2>Your Health, Our Priority</h2>
+        <p>FreshSteps AI empowers you to make smarter lifestyle choices by understanding how pollution impacts your
+          body,
+          helping prevent respiratory and cardiac issues.</p>
+      </div>
+      <div class="health-image">
+        <img src="https://img.icons8.com/color/300/lungs.png" alt="Healthy Lungs" />
+      </div>
+    </section>
+
+    <!-- Impact Section -->
+    <section class="impact">
+      <h2>Impact Beyond Individuals</h2>
+      <p class="impact-intro">
+        FreshSteps AI is not just about personal health — it contributes to a cleaner, healthier society.
+        By anonymously collecting air quality data from users, we help build a real-time pollution map
+        for cities and communities.
+      </p>
+
+      <div class="impact-grid">
+        <div class="impact-card">
+          <img src="https://img.icons8.com/color/96/earth-planet.png" alt="Community Data" />
+          <h3>Community Data</h3>
+          <p>
+            Every wearable contributes to a collective air quality map, empowering cities to take
+            targeted actions against pollution hotspots.
+          </p>
+        </div>
+
+        <div class="impact-card">
+          <img src="https://img.icons8.com/color/96/city.png" alt="Cleaner Cities" />
+          <h3>Cleaner Cities</h3>
+          <p>
+            Urban planners and governments can use insights to reduce traffic pollution, create green zones,
+            and improve public health policies.
+          </p>
+        </div>
+
+        <div class="impact-card">
+          <img src="{{ url_for('static', filename='images/health.png')}}" alt="Future Prevention" />
+          <h3>Future Prevention</h3>
+          <p>
+            By understanding pollution trends, FreshSteps AI helps prevent long-term health issues
+            and promotes sustainable living.
+          </p>
+        </div>
+      </div>
+
+      <div class="impact-footer">
+        <h3>Together, we’re building healthier lives & cleaner cities 🌍</h3><br>
+        <h2><b>ECP:Enter,Compete,Protect</b></h2>
+
+      </div>
+    </section>
+
+  </div>
+  <script>
+    // particles script
+    particlesJS("particles-js", {
+      "particles": {
+        "number": {
+          "value": 110,
+          "density": { "enable": true, "value_area": 1000 }
+        },
+        "color": { "value": ["#ffffff", "#87ceeb", "#b3e5fc"] },
+        "shape": {
+          "type": "circle",
+          "stroke": { "width": 0, "color": "#000000" }
+        },
+        "opacity": {
+          "value": 0.6,
+          "random": true,
+          "anim": {
+            "enable": true,
+            "speed": 1.2,
+            "opacity_min": 0.3,
+            "sync": false
+          }
+        },
+        "size": {
+          "value": 3,
+          "random": true,
+          "anim": {
+            "enable": true,
+            "speed": 2,
+            "size_min": 0.5,
+            "sync": false
+          }
+        },
+        "line_linked": { "enable": false },  /* No connecting lines */
+        "move": {
+          "enable": true,
+          "speed": 2,
+          "direction": "none",
+          "random": true,
+          "straight": false,
+          "out_mode": "out",
+          "bounce": false
+        }
+      },
+      "interactivity": {
+        "detect_on": "canvas",
+        "events": {
+          "onhover": { "enable": true, "mode": "repulse" },
+          "onclick": { "enable": true, "mode": "push" },
+          "resize": true
+        },
+        "modes": {
+          "repulse": { "distance": 100, "duration": 0.4 },
+          "push": { "particles_nb": 4 }
+        }
+      },
+      "retina_detect": true
+    });
+  </script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Air Wellness Profile — FreshSteps AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+</head>
+<body>
+<section id="form">
+  <div id="particles-js"></div>
+  <div class="home-content">
+    <div class="navbar">
+      <nav>
+        <div class="logo">FreshSteps AI</div>
+        <ul class="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/form">Profile</a></li>
+          <li><a href="#">Dashboard</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="form-container">
+      <h2 class="airwellness">Air Wellness Profile</h2>
+      <p class="subheading">Fill in your details to understand your air exposure & health status.</p>
+
+      <form action="/submit_form" method="POST">
+        <label for="fullName"><b>Full Name</b></label>
+        <input type="text" id="fullName" name="fullName" required>
+
+        <label for="age"><b>Age</b></label>
+        <input type="number" id="age" name="age" required>
+
+        <label for="city"><b>City</b></label>
+        <select id="city" name="city" required>
+          <option value="">-- Select --</option>
+          <option value="Gurugram">Gurugram</option>
+         
+
+        </select>
+
+        <label for="indoor"><b>Daily Indoor Hours</b></label>
+        <input type="number" id="indoor" name="indoor" placeholder="e.g. 20">
+
+        <label for="outdoor"><b>Daily Outdoor Hours</b></label>
+        <input type="number" id="outdoor" name="outdoor" placeholder="e.g. 4">
+
+        <label for="work"><b>Work Hours</b></label>
+        <input type="number" id="work" name="work" placeholder="e.g. 8">
+
+        <label for="from_location"><b>From Location</b></label>
+        <input type="text" id="from_location" name="from_location" placeholder="e.g. MG Road">
+
+        <label for="to_location"><b>To Location</b></label>
+        <input type="text" id="to_location" name="to_location" placeholder="e.g. Cyber Hub">
+
+        <label><b>Health Conditions</b></label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="condition" value="Asthma"> Asthma</label>
+          <label><input type="checkbox" name="condition" value="Allergies"> Allergies</label>
+          <label><input type="checkbox" name="condition" value="Heart Disease"> Heart Disease</label>
+          <label><input type="checkbox" name="condition" value="Diabetes"> Diabetes</label>
+          <label><input type="checkbox" name="condition" value="COPD"> COPD</label>
+          <label><input type="checkbox" name="condition" value="Hypertension"> Hypertension</label>
+        </div>
+
+        <label for="other"><b>Other Health Conditions</b></label>
+        <input type="text" id="other" name="other" placeholder="e.g. Thyroid">
+
+        <label for="notes"><b>Additional Notes</b></label>
+        <textarea id="notes" name="notes" rows="2" placeholder="Optional"></textarea>
+
+        <!-- GPS autofill -->
+        <input type="hidden" id="latitude" name="latitude">
+        <input type="hidden" id="longitude" name="longitude">
+
+        <button type="submit" class="submit-btn">Start Monitoring</button>
+      </form>
+
+      <div class="footer"><b>ECP: ENTER, COMPETE, PROTECT 🌱</b></div>
+    </div>
+  </div>
+</section>
+
+<script>
+  particlesJS("particles-js", {
+    "particles": { "number": {"value":110,"density":{"enable":true,"value_area":1000}},
+      "color":{"value":["#ffffff","#87ceeb","#b3e5fc"]},"shape":{"type":"circle"},"opacity":{"value":0.6,"random":true},
+      "size":{"value":3,"random":true},"line_linked":{"enable":false},"move":{"enable":true,"speed":2}
+    },
+    "interactivity": {"detect_on":"canvas","events":{"onhover":{"enable":true,"mode":"repulse"}}},
+    "retina_detect": true
+  });
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      document.getElementById("latitude").value = position.coords.latitude;
+      document.getElementById("longitude").value = position.coords.longitude;
+    }, function(){ /* ignore errors */ }, { timeout:5000 });
+  }
+</script>
+</body>
+</html>
+
