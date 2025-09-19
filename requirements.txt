@@ -45,7 +45,8 @@ jsonpointer==2.1
 
 matplotlib==3.9.2
 
-mkl-service==2.4.0
+mkl-service==2.5.2
+
 
 oauthlib==3.3.1
 
